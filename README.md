@@ -65,7 +65,6 @@ lol-assistant/
     ├── index.html
     ├── style.css
     ├── script.js
-    └── data.js
 ```
 
 **5. Run the server**
@@ -165,7 +164,6 @@ lol-assistant/
     ├── index.html  # App shell and page layout
     ├── style.css   # All styles (dark LoL theme)
     ├── script.js   # Frontend logic: routing, API calls, rendering
-    └── data.js     # Curated data for Ahri, Jinx, Thresh, Lee Sin, Yone, Nautilus
 ```
 
 ---
