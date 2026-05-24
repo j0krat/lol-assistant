@@ -1,0 +1,677 @@
+:root {
+  --bg: #081017;
+  --surface: #0f1b24;
+  --surface-2: #152531;
+  --line: #263a48;
+  --text: #eef6f7;
+  --muted: #91a8b4;
+  --gold: #d7b56d;
+  --blue: #42a5d6;
+  --green: #50c878;
+  --red: #e25d5d;
+  --shadow: 0 22px 55px rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(135deg, rgba(66, 165, 214, 0.13), transparent 34%),
+    linear-gradient(315deg, rgba(215, 181, 109, 0.12), transparent 30%),
+    var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px;
+  background: rgba(7, 15, 22, 0.92);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(215, 181, 109, 0.6);
+  color: var(--gold);
+  font-weight: 800;
+  background: linear-gradient(135deg, #102738, #101820);
+}
+
+.brand strong {
+  display: block;
+  font-size: 16px;
+}
+
+.brand span,
+.source-note span,
+.muted,
+small {
+  color: var(--muted);
+}
+
+.brand span,
+.source-note span {
+  font-size: 12px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav-item,
+.metric-card,
+.primary-btn,
+.chip,
+.tab-button {
+  cursor: pointer;
+}
+
+.nav-item {
+  text-align: left;
+  padding: 12px 14px;
+  color: var(--muted);
+  background: transparent;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--text);
+  background: rgba(66, 165, 214, 0.1);
+  border-left-color: var(--blue);
+}
+
+.source-note {
+  margin-top: auto;
+  padding: 14px;
+  background: rgba(215, 181, 109, 0.08);
+  border: 1px solid rgba(215, 181, 109, 0.22);
+}
+
+.language-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.lang-btn {
+  min-height: 36px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lang-btn.active,
+.lang-btn:hover {
+  color: #071017;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.source-note strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.workspace {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.dashboard-hero {
+  min-height: 330px;
+  padding: 42px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: end;
+  gap: 28px;
+  background:
+    linear-gradient(rgba(8, 16, 23, 0.2), rgba(8, 16, 23, 0.82)),
+    url("https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg") center 22% / cover;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 14px;
+  max-width: 760px;
+  font-size: clamp(34px, 5vw, 72px);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.hero-copy {
+  max-width: 690px;
+  margin-bottom: 0;
+  color: #d7e7eb;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.hero-panel,
+.panel,
+.champion-detail,
+.result-box {
+  background: rgba(15, 27, 36, 0.9);
+  border: 1px solid var(--line);
+}
+
+.hero-panel {
+  padding: 18px;
+}
+
+.hero-panel span,
+.metric-card span,
+.stat span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-panel strong,
+.metric-card strong {
+  display: block;
+  margin: 8px 0;
+  font-size: 24px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.metric-card {
+  min-height: 132px;
+  padding: 18px;
+  text-align: left;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.metric-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-1px);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+
+.panel {
+  padding: 22px;
+}
+
+.steps {
+  display: grid;
+  gap: 10px;
+}
+
+.steps div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #d7e7eb;
+}
+
+.steps b {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: #081017;
+  background: var(--gold);
+}
+
+.toolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.toolbar h1 {
+  margin-bottom: 0;
+  font-size: 44px;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: var(--text);
+  background: #0b1821;
+  border: 1px solid var(--line);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--blue);
+}
+
+.champion-layout {
+  display: grid;
+  grid-template-columns: minmax(330px, 0.42fr) minmax(0, 0.58fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.champion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 10px;
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+  padding-right: 6px;
+}
+
+.champion-card {
+  min-height: 152px;
+  padding: 10px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.champion-card.active,
+.champion-card:hover {
+  border-color: var(--gold);
+}
+
+.champion-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.champion-card strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.champion-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.champion-detail {
+  min-height: 580px;
+  overflow: hidden;
+}
+
+.empty-state {
+  min-height: 580px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.champion-splash {
+  min-height: 270px;
+  padding: 22px;
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center 24%;
+  position: relative;
+}
+
+.champion-splash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent, rgba(8, 16, 23, 0.92));
+}
+
+.champion-heading {
+  position: relative;
+}
+
+.champion-heading h2 {
+  margin-bottom: 4px;
+  font-size: 36px;
+}
+
+.detail-body {
+  padding: 20px;
+}
+
+.tag-row,
+.chip-row,
+.source-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 7px 10px;
+  color: #cce6ef;
+  background: rgba(66, 165, 214, 0.12);
+  border: 1px solid rgba(66, 165, 214, 0.28);
+  font-size: 13px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab-button {
+  padding: 10px 12px;
+  color: var(--muted);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button.active {
+  color: var(--text);
+  border-color: var(--gold);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.spell-list,
+.guide-grid,
+.item-grid,
+.rune-grid,
+.stat-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.spell-card,
+.guide-card,
+.item-card,
+.rune-card,
+.stat {
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+
+.spell-card {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+}
+
+.spell-card img,
+.item-card img,
+.rune-card img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+}
+
+.spell-card h3,
+.guide-card h3,
+.item-card h3,
+.rune-card h3 {
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.spell-card p,
+.guide-card p,
+.item-card p,
+.rune-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.guide-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.item-grid,
+.rune-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.item-card,
+.rune-card {
+  display: flex;
+  gap: 12px;
+}
+
+.stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stat strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 20px;
+}
+
+.source-row a {
+  color: var(--gold);
+  text-decoration: none;
+  padding: 8px 10px;
+  border: 1px solid rgba(215, 181, 109, 0.3);
+}
+
+.source-row a:hover {
+  background: rgba(215, 181, 109, 0.08);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.primary-btn {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 14px;
+  color: #071017;
+  background: var(--gold);
+  font-weight: 800;
+}
+
+.primary-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.result-box {
+  display: none;
+  margin-top: 16px;
+  padding: 18px;
+  line-height: 1.6;
+}
+
+.result-box.visible {
+  display: block;
+}
+
+.result-box h3 {
+  margin-bottom: 8px;
+}
+
+.result-box ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.status-good {
+  color: var(--green);
+}
+
+.status-bad {
+  color: var(--red);
+}
+
+@media (max-width: 1100px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+  }
+
+  .nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .nav-item {
+    text-align: center;
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+  }
+
+  .nav-item.active,
+  .nav-item:hover {
+    border-bottom-color: var(--blue);
+  }
+
+  .source-note {
+    display: none;
+  }
+
+  .champion-layout,
+  .dashboard-hero,
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .champion-grid {
+    max-height: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace,
+  .sidebar,
+  .dashboard-hero {
+    padding: 16px;
+  }
+
+  .nav,
+  .metric-grid,
+  .form-grid,
+  .guide-grid,
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar,
+  .toolbar-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar h1 {
+    font-size: 34px;
+  }
+}

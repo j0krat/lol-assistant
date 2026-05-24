@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoL Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">LA</div>
+        <div>
+          <strong>LoL Assistant</strong>
+          <span id="patchLabel">Cargando parche</span>
+        </div>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-page="dashboard">Inicio</button>
+        <button class="nav-item" data-page="champions">Campeones</button>
+        <button class="nav-item" data-page="draft">Draft</button>
+        <button class="nav-item" data-page="advisor">Tiempo real</button>
+        <button class="nav-item" data-page="account">Cuenta Riot</button>
+      </nav>
+      <div class="language-switch" aria-label="Language selector">
+        <button class="lang-btn active" data-lang="es" type="button">ES</button>
+        <button class="lang-btn" data-lang="en" type="button">EN</button>
+      </div>
+      <div class="source-note">
+        <strong>Datos base</strong>
+        <span>Riot Data Dragon. OP.GG, LeagueOfGraphs y YouTube quedan como enlaces de investigación por campeón.</span>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="page active" id="page-dashboard">
+        <div class="dashboard-hero">
+          <div>
+            <p class="eyebrow">Coach, builds y draft</p>
+            <h1>Decide mejor antes y durante la partida.</h1>
+            <p class="hero-copy">Explora todos los campeones, consulta planes de matchup, ajusta runas/items por amenaza enemiga y recibe decisiones rápidas para objetivos, oleadas y visión.</p>
+          </div>
+          <div class="hero-panel">
+            <span>Estado</span>
+            <strong id="dataStatus">Sincronizando datos oficiales</strong>
+            <small id="championCount">0 campeones cargados</small>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <button class="metric-card" data-jump="champions">
+            <span>Base de campeones</span>
+            <strong id="metricChampions">...</strong>
+            <small>Habilidades, roles y planes por fase</small>
+          </button>
+          <button class="metric-card" data-jump="draft">
+            <span>Draft helper</span>
+            <strong>Matchup</strong>
+            <small>Responde a picks y composición rival</small>
+          </button>
+          <button class="metric-card" data-jump="advisor">
+            <span>Tiempo real</span>
+            <strong>Macro</strong>
+            <small>Oleadas, visión, objetivos y riesgo</small>
+          </button>
+        </div>
+
+        <section class="panel two-col">
+          <div>
+            <h2>Flujo recomendado</h2>
+            <div class="steps">
+              <div><b>1</b><span>Elige campeón y rol.</span></div>
+              <div><b>2</b><span>Marca el rival o la amenaza principal.</span></div>
+              <div><b>3</b><span>Usa la pestaña de tiempo real cuando cambie el mapa.</span></div>
+            </div>
+          </div>
+          <div>
+            <h2>Fuentes externas</h2>
+            <p class="muted">La app no copia datos privados de terceros. Te abre búsquedas directas en OP.GG, LeagueOfGraphs y YouTube para revisar tendencias del parche y guías recientes.</p>
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="page-champions">
+        <div class="toolbar">
+          <div>
+            <p class="eyebrow">Todos los campeones</p>
+            <h1>Biblioteca</h1>
+          </div>
+          <div class="toolbar-actions">
+            <input id="championSearch" class="input" type="search" placeholder="Buscar campeón, rol o clase">
+            <select id="roleFilter" class="input">
+              <option value="all">Todos los roles</option>
+              <option value="Top">Top</option>
+              <option value="Jungle">Jungle</option>
+              <option value="Mid">Mid</option>
+              <option value="Bot">Bot</option>
+              <option value="Support">Support</option>
+            </select>
+          </div>
+        </div>
+        <div class="champion-layout">
+          <div class="champion-grid" id="championGrid"></div>
+          <article class="champion-detail" id="championDetail">
+            <div class="empty-state">Selecciona un campeón para ver su guía completa.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="page" id="page-draft">
+        <div class="toolbar">
+          <div>
+            <p class="eyebrow">Respuesta a composición</p>
+            <h1>Draft</h1>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="form-grid">
+            <label>Tu campeón<select id="draftChampion" class="input"></select></label>
+            <label>Rol<select id="draftRole" class="input"></select></label>
+            <label>Rival directo<input id="draftLaneEnemy" class="input" placeholder="Ej: Darius, Zed, Caitlyn"></label>
+            <label>Amenaza principal<select id="draftThreat" class="input"></select></label>
+          </div>
+          <label>Composición enemiga<textarea id="draftComp" class="input" rows="3" placeholder="Ej: Malphite, Jarvan IV, Orianna, Jinx, Lulu"></textarea></label>
+          <button class="primary-btn" id="draftBtn">Generar plan de draft</button>
+          <div class="result-box" id="draftResult"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-advisor">
+        <div class="toolbar">
+          <div>
+            <p class="eyebrow">Decisiones en partida</p>
+            <h1>Tiempo real</h1>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="form-grid">
+            <label>Campeón<select id="advisorChampion" class="input"></select></label>
+            <label>Rol<select id="advisorRole" class="input"></select></label>
+            <label>Fase<select id="advisorPhase" class="input"></select></label>
+            <label>Estado<select id="advisorState" class="input"></select></label>
+            <label>Objetivo<select id="advisorObjective" class="input"></select></label>
+            <label>Visión<select id="advisorVision" class="input"></select></label>
+            <label>Oleada<select id="advisorWave" class="input"></select></label>
+            <label>Rival o amenaza<input id="advisorEnemy" class="input" placeholder="Ej: Nocturne fedeado"></label>
+          </div>
+          <label>Contexto<textarea id="advisorContext" class="input" rows="4" placeholder="Ej: Dragón en 50s, tengo flash, mi bot no tiene prio, mid enemigo desaparecido"></textarea></label>
+          <button class="primary-btn" id="advisorBtn">Pedir decisión</button>
+          <div class="result-box" id="advisorResult"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-account">
+        <div class="toolbar">
+          <div>
+            <p class="eyebrow">Riot API</p>
+            <h1>Cuenta Riot</h1>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="form-grid">
+            <label>Riot ID<input id="riotName" class="input" placeholder="Nombre"></label>
+            <label>TAG<input id="riotTag" class="input" placeholder="LAS"></label>
+            <label>Región<select id="riotRegion" class="input"></select></label>
+          </div>
+          <button class="primary-btn" id="riotBtn">Consultar cuenta</button>
+          <div class="result-box" id="riotResult"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
