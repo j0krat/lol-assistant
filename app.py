@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import time
+from collections import defaultdict, deque
 from functools import wraps
 from typing import Any
 
@@ -27,9 +28,13 @@ app = Flask(__name__, static_folder=STATIC_DIR)
 CORS(app)
 
 RIOT_API_KEY = os.getenv("RIOT_API_KEY", "")
+FLASK_DEBUG = os.getenv("FLASK_DEBUG", "0") == "1"
 DDRAGON_BASE = "https://ddragon.leagueoflegends.com"
 REQUEST_TIMEOUT = 12
 CACHE_TTL = 60 * 60 * 6
+API_RATE_LIMIT = 120
+API_RATE_WINDOW = 60
+SUPPORTED_LOCALES = {"es_ES", "en_US"}
 
 REGION_PLATFORM = {
     "LA1": "la1",
@@ -54,6 +59,40 @@ REGION_ROUTING = {
 }
 
 _cache: dict[str, tuple[float, Any]] = {}
+_rate_hits: dict[str, deque[float]] = defaultdict(deque)
+
+
+@app.before_request
+def limit_api_requests():
+    if not request.path.startswith("/api/"):
+        return None
+
+    key = request.headers.get("X-Forwarded-For", request.remote_addr or "local").split(",")[0].strip()
+    now = time.time()
+    hits = _rate_hits[key]
+    while hits and now - hits[0] > API_RATE_WINDOW:
+        hits.popleft()
+
+    if len(hits) >= API_RATE_LIMIT:
+        return jsonify({"error": "Demasiadas solicitudes. Intenta de nuevo en un momento."}), 429
+
+    hits.append(now)
+    return None
+
+
+@app.errorhandler(requests.RequestException)
+def handle_external_api_error(error):
+    return jsonify({"error": "Servicio externo no disponible", "detail": str(error)}), 503
+
+
+@app.errorhandler(KeyError)
+def handle_missing_external_data(error):
+    return jsonify({"error": "La respuesta externa no tenia el formato esperado", "detail": str(error)}), 502
+
+
+@app.errorhandler(ValueError)
+def handle_bad_request(error):
+    return jsonify({"error": str(error)}), 400
 
 
 def cached(key_prefix: str, ttl: int = CACHE_TTL):
@@ -78,6 +117,20 @@ def fetch_json(url: str, **kwargs) -> Any:
     response = requests.get(url, timeout=REQUEST_TIMEOUT, **kwargs)
     response.raise_for_status()
     return response.json()
+
+
+def requested_locale() -> str:
+    locale = request.args.get("locale", "es_ES")
+    if locale not in SUPPORTED_LOCALES:
+        return "es_ES"
+    return locale
+
+
+def requested_region() -> str:
+    region = request.args.get("region", "LA2").upper()
+    if region not in REGION_PLATFORM:
+        raise ValueError(f"Region no soportada: {region}")
+    return region
 
 
 @cached("ddragon-version", ttl=60 * 30)
@@ -122,7 +175,11 @@ def riot_get(url: str, **params):
     if not RIOT_API_KEY:
         return jsonify({"error": "RIOT_API_KEY no configurada en el servidor"}), 500
     response = requests.get(url, headers=riot_headers(), params=params, timeout=REQUEST_TIMEOUT)
-    return jsonify(response.json()), response.status_code
+    try:
+        payload = response.json()
+    except ValueError:
+        payload = {"error": "Riot API devolvio una respuesta no JSON"}
+    return jsonify(payload), response.status_code
 
 
 @app.route("/")
@@ -151,7 +208,7 @@ def meta():
 
 @app.route("/api/champions")
 def champions():
-    locale = request.args.get("locale", "es_ES")
+    locale = requested_locale()
     data = champion_index(locale)
     version = latest_version()
     champions_data = []
@@ -174,7 +231,7 @@ def champions():
 
 @app.route("/api/champions/<champion_id>")
 def champion(champion_id: str):
-    locale = request.args.get("locale", "es_ES")
+    locale = requested_locale()
     detail = champion_detail(champion_id, locale)
     version = latest_version()
     champ = next(iter(detail["data"].values()))
@@ -191,7 +248,7 @@ def champion(champion_id: str):
 
 @app.route("/api/items")
 def items():
-    locale = request.args.get("locale", "es_ES")
+    locale = requested_locale()
     data = item_index(locale)
     version = latest_version()
     payload = []
@@ -215,7 +272,7 @@ def items():
 
 @app.route("/api/runes")
 def runes():
-    locale = request.args.get("locale", "es_ES")
+    locale = requested_locale()
     data = rune_index(locale)
     version = latest_version()
     for tree in data:
@@ -400,7 +457,7 @@ def recommendation_text(prompt: str) -> str:
 def get_account():
     game_name = request.args.get("gameName", "")
     tag_line = request.args.get("tagLine", "")
-    region = request.args.get("region", "LA2").upper()
+    region = requested_region()
     routing = REGION_ROUTING.get(region, "americas")
     url = f"https://{routing}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{game_name}/{tag_line}"
     return riot_get(url)
@@ -409,7 +466,7 @@ def get_account():
 @app.route("/api/riot/summoner")
 def get_summoner():
     puuid = request.args.get("puuid", "")
-    region = request.args.get("region", "LA2").upper()
+    region = requested_region()
     server = REGION_PLATFORM.get(region, "la2")
     url = f"https://{server}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{puuid}"
     return riot_get(url)
@@ -418,7 +475,7 @@ def get_summoner():
 @app.route("/api/riot/ranked")
 def get_ranked():
     summoner_id = request.args.get("summonerId", "")
-    region = request.args.get("region", "LA2").upper()
+    region = requested_region()
     server = REGION_PLATFORM.get(region, "la2")
     url = f"https://{server}.api.riotgames.com/lol/league/v4/entries/by-summoner/{summoner_id}"
     return riot_get(url)
@@ -427,7 +484,7 @@ def get_ranked():
 @app.route("/api/riot/matches")
 def get_matches():
     puuid = request.args.get("puuid", "")
-    region = request.args.get("region", "LA2").upper()
+    region = requested_region()
     count = request.args.get("count", 10)
     routing = REGION_ROUTING.get(region, "americas")
     url = f"https://{routing}.api.riotgames.com/lol/match/v5/matches/by-puuid/{puuid}/ids"
@@ -436,7 +493,7 @@ def get_matches():
 
 @app.route("/api/riot/match/<match_id>")
 def get_match(match_id: str):
-    region = request.args.get("region", "LA2").upper()
+    region = requested_region()
     routing = REGION_ROUTING.get(region, "americas")
     url = f"https://{routing}.api.riotgames.com/lol/match/v5/matches/{match_id}"
     return riot_get(url)
@@ -444,4 +501,4 @@ def get_match(match_id: str):
 
 if __name__ == "__main__":
     print("LoL Assistant corriendo en http://localhost:5000")
-    app.run(debug=True, port=5000)
+    app.run(debug=FLASK_DEBUG, port=5000)

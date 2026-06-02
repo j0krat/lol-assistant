@@ -1,47 +1,46 @@
-# lol-assistant
+# LoL Assistant
 
-A lightweight self-hosted coaching tool for League of Legends built with Flask and Riot's official APIs.
+A lightweight self-hosted coaching tool for League of Legends built with Flask, Riot Data Dragon and the optional Riot Games API.
 
-It provides champion guides, draft recommendations, macro advice, and Riot account lookup in a clean web interface.
-
----
+It provides champion guides, draft recommendations, real-time macro advice, bilingual UI support and Riot account lookup in a clean web interface.
 
 ## Features
 
-* Champion library with abilities, builds, runes, matchups and playstyle notes
-* Draft helper with matchup-based recommendations
-* Real-time macro advisor for live game decisions
-* Riot account lookup with ranked stats and recent matches
-* Riot Data Dragon integration for up-to-date game data
-
----
+- Champion library with official images, abilities, stats and roles.
+- Spanish/English language switch.
+- Draft helper for matchup and team composition planning.
+- Real-time decision assistant for waves, vision and objectives.
+- Optional Riot account lookup with ranked stats.
+- Riot Data Dragon integration for up-to-date game data.
+- External research links for OP.GG, LeagueOfGraphs and YouTube.
 
 ## Requirements
 
-* Python 3.9+
-* Riot Developer API Key (optional, required for Riot Account features)
+- Python 3.9+
+- Riot Developer API Key, optional and required only for Riot Account features.
 
 Get a free API key from:
-https://developer.riotgames.com/
 
----
+```text
+https://developer.riotgames.com/
+```
 
 ## Installation
 
-### Clone the repository
+Clone the repository:
 
 ```bash
 git clone https://github.com/j0krat/lol-assistant.git
 cd lol-assistant
 ```
 
-### Install dependencies
+Install dependencies:
 
 ```bash
-pip install flask flask-cors requests python-dotenv
+pip install -r requirements.txt
 ```
 
-### Configure environment variables
+Configure environment variables:
 
 ```bash
 cp .env.example .env
@@ -50,27 +49,11 @@ cp .env.example .env
 Add your Riot API key inside `.env`:
 
 ```env
-RIOT_API_KEY=YOUR_API_KEY
+RIOT_API_KEY=YOUR_RIOT_API_KEY_HERE
+FLASK_DEBUG=1
 ```
 
----
-
-## Project Structure
-
-```text
-lol-assistant/
-├── app.py
-├── .env.example
-├── .gitignore
-└── static/
-    ├── index.html
-    ├── style.css
-    └── script.js
-```
-
----
-
-## Run the application
+Run the application:
 
 ```bash
 python app.py
@@ -79,34 +62,55 @@ python app.py
 Open:
 
 ```text
-http://localhost:5000
+http://127.0.0.1:5000
 ```
 
----
+## Project Structure
+
+```text
+lol-assistant/
+├── app.py
+├── requirements.txt
+├── .env.example
+├── .gitignore
+└── static/
+    ├── index.html
+    ├── style.css
+    └── script.js
+```
 
 ## API Endpoints
 
-| Method | Endpoint              | Description         |
-| ------ | --------------------- | ------------------- |
-| GET    | `/api/champions`      | Champion list       |
-| GET    | `/api/champions/<id>` | Champion details    |
-| GET    | `/api/items`          | Item data           |
-| GET    | `/api/runes`          | Rune data           |
-| POST   | `/api/advisor`        | Real-time advice    |
-| POST   | `/api/chat`           | Coaching response   |
-| GET    | `/api/riot/account`   | Riot account lookup |
-| GET    | `/api/riot/matches`   | Recent matches      |
-
----
+- `GET /api/meta`
+- `GET /api/champions?locale=es_ES`
+- `GET /api/champions/<champion_id>?locale=en_US`
+- `GET /api/items`
+- `GET /api/runes`
+- `POST /api/recommendation`
+- `POST /api/chat`
+- `GET /api/riot/account`
+- `GET /api/riot/summoner`
+- `GET /api/riot/ranked`
+- `GET /api/riot/matches`
+- `GET /api/riot/match/<match_id>`
 
 ## Data Sources
 
-* Riot Data Dragon
-* Riot Games API
+- Riot Data Dragon
+- Riot Games API
 
----
+## Security
 
-## License
+Do not commit `.env`. The repository includes `.env.example` so other users know which variables are required without exposing secrets.
 
-This project is not affiliated with or endorsed by Riot Games.
-League of Legends and all related assets belong to Riot Games, Inc.
+## Roadmap
+
+- [ ] Add screenshots.
+- [ ] Improve matchup/counter database.
+- [ ] Add persistent cache.
+- [ ] Add deeper match-history analysis.
+- [ ] Add deploy configuration.
+
+## Disclaimer
+
+This project is not affiliated with or endorsed by Riot Games. League of Legends and all related assets belong to Riot Games, Inc.
